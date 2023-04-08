@@ -2,29 +2,32 @@ package com.example.coursework2.service;
 
 import com.example.coursework2.exception.MoreQuestionsAskedException;
 import com.example.coursework2.object.Question;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Service
 public class ExaminerServiceImpl implements ExaminerService {
 
-    private  QuestionService questionService;
+    private QuestionService questionService;
 
     public ExaminerServiceImpl(QuestionService questionService) {
         this.questionService = questionService;
     }
 
-    public List<Question> getQuestion(int amount)  {
+    @Override
+    public List<Question> getQuestion(int amount) {
         List<Question> questions = new ArrayList<>();
-        Set<Question> usedQuestions = new HashSet<>();
+        Set<Question> indexQuestions = new HashSet<>();
 
-        while(questions.size() < amount) {
+        while (questions.size() < amount) {
             Question question = questionService.getRandomQuestion();
-            if(usedQuestions.contains(question)) {
+            if (indexQuestions.contains(question)) {
                 continue;
             }
-            usedQuestions.add(question);
+            indexQuestions.add(question);
             questions.add(question);
-            if(questions.size() > questionService.getAllQuestions().size()) {
+            if (questions.size() > questionService.getAllQuestions().size()) {
                 throw new MoreQuestionsAskedException("Запрошено большее количество вопросов!");
             }
         }

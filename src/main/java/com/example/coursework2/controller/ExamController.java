@@ -2,22 +2,31 @@ package com.example.coursework2.controller;
 
 import com.example.coursework2.exception.MoreQuestionsAskedException;
 import com.example.coursework2.object.Question;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import com.example.coursework2.service.ExaminerService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/exam")
+@RequestMapping("/exam/get")
 public class ExamController {
-    private  ExaminerService examinerService;
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({MoreQuestionsAskedException.class, MoreQuestionsAskedException.class})
+    public String handleException(RuntimeException e){
+        return String.format("%s %s", HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
 
-    @GetMapping("/java")
-    public List<Question> getJavaQuestions(@RequestParam int amount) throws MoreQuestionsAskedException {
+    private ExaminerService examinerService;
+
+    public ExamController(ExaminerService examinerService) {
+        this.examinerService = examinerService;
+    }
+
+    @GetMapping("/{amount}")
+    public List<Question> getJavaQuestions(@PathVariable("amount") int amount) throws MoreQuestionsAskedException {
         return examinerService.getQuestion(amount);
     }
 }
