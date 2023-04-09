@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import com.example.coursework2.service.ExaminerService;
 
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -15,18 +16,18 @@ public class ExamController {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({MoreQuestionsAskedException.class, MoreQuestionsAskedException.class})
-    public String handleException(RuntimeException e){
+    public String handleException(RuntimeException e) {
         return String.format("%s %s", HttpStatus.BAD_REQUEST.value(), e.getMessage());
     }
 
-    private ExaminerService examinerService;
+    private final ExaminerService examinerService;
 
     public ExamController(ExaminerService examinerService) {
         this.examinerService = examinerService;
     }
 
     @GetMapping("/{amount}")
-    public List<Question> getJavaQuestions(@PathVariable("amount") int amount) throws MoreQuestionsAskedException {
+    public Collection<Question> getJavaQuestions(@PathVariable("amount") int amount) throws MoreQuestionsAskedException {
         return examinerService.getQuestion(amount);
     }
 }

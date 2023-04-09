@@ -9,30 +9,27 @@ import java.util.*;
 @Service
 public class ExaminerServiceImpl implements ExaminerService {
 
-    private QuestionService questionService;
+    private final QuestionService questionService;
 
     public ExaminerServiceImpl(QuestionService questionService) {
         this.questionService = questionService;
     }
 
     @Override
-    public List<Question> getQuestion(int amount) {
-        List<Question> questions = new ArrayList<>();
-        Set<Question> indexQuestions = new HashSet<>();
+    public Collection<Question> getQuestion(int amount) {
 
-        while (questions.size() < amount) {
-            Question question = questionService.getRandomQuestion();
-            if (indexQuestions.contains(question)) {
-                continue;
-            }
-            indexQuestions.add(question);
-            questions.add(question);
-            if (questions.size() > questionService.getAllQuestions().size()) {
-                throw new MoreQuestionsAskedException("Запрошено большее количество вопросов!");
-            }
+        if(amount < 1) {
+            throw new MoreQuestionsAskedException("Номер вопроса не может быть отрицательным или 0");
+        }
+        if (amount > questionService.getAllQuestions().size()) {
+            throw new MoreQuestionsAskedException("Запрошено большее количество вопросов!");
         }
 
-        return questions;
+        Set<Question> index = new HashSet<>();
+        while (index.size() < amount) {
+            index.add(questionService.getRandomQuestion());
+        }
+        return index;
     }
 
 }
